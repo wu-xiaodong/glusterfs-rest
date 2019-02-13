@@ -161,11 +161,12 @@ def listquota(name):
 
 
 def setquota(name, quota):
-    if quota:
+    if quota > 0:
         cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota)+"GB"]
+        return utils.checkstatuszero(cmd)
     else:
         raise GlusterCliFailure("Volume quota must be greater than 0!")
-    return utils.checkstatuszero(cmd)
+        return
 
 
 def addbrick(name, brickpath, replica=0, stripe=0, force=False):
