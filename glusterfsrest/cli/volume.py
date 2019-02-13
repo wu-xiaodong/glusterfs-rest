@@ -96,7 +96,7 @@ def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
         cmd += ["replica", str(replica)]
 
     if arbiter:
-        cmd += ["arbiter 1"]
+        cmd += ["arbiter", "1"]
 
     cmd += ["transport", transport]
 
