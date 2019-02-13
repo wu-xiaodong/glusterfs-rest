@@ -133,6 +133,33 @@ def restart(name):
     return True
 
 
+def _parse_a_limit(limit_el):
+    value = {
+        'path': limit_el.find('path').text,
+        'hard_limit': limit_el.find('hard_limit').text,
+        'used_space': limit_el.find('used_space').text,
+        'Hard-limit exceeded?': limit_el.find('hl_exceeded').text
+    }
+    return value
+
+
+def _parsequotalist(quotainfo):
+    tree = utils.checkxmlcorrupt(quotainfo)
+    limits = []
+    for el in tree.findall('volQuota/limit'):
+        try:
+            limits.append(_parse_a_limit(el))
+        except (ParseError, AttributeError, ValueError) as e:
+            raise GlusterCliBadXml(str(e))
+
+    return limits
+
+
+def listquota(name):
+    cmd = VOLUME_CMD + ["quota", name, "list"]
+    return utils.execute_and_output(cmd, _parsequotalist)
+
+
 def addbrick(name, brickpath, replica=0, stripe=0, force=False):
     cmd = VOLUME_CMD + ["add-brick", name]
     if stripe:
