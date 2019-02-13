@@ -11,4 +11,4 @@
 
 PORT=$(cat /var/lib/glusterd/rest/port)
 typeset -i PORT
-/usr/bin/gunicorn glusterfsrest.api:app -b :$PORT "$@"
+/usr/bin/gunicorn glusterfsrest.api:app -b :$PORT "$@" -t 60 -w 20
