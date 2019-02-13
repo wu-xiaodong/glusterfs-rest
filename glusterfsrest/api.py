@@ -81,6 +81,12 @@ def volume_get(version, name):
     return run_and_response(volume.info, [name])
 
 
+@app.route("/api/<float:version>/volume/<string:name>/quota", methods=["GET"])
+@requires_auth(['glusterroot', 'glusteradmin', 'glusteruser'])
+def volume_quota_get(version, name):
+    return run_and_response(volume.listquota, [name])
+
+
 @app.route("/api/<float:version>/peers", methods=["GET"])
 @requires_auth(['glusterroot', 'glusteradmin', 'glusteruser'])
 def peers_get(version):
