@@ -100,7 +100,7 @@ apis:
           default: 0
       example: |
         
-        curl -X DELETE http://admin:secret123@localhost:9000/api/1.0/volume/gv1
+        curl -X DELETE http://admin:secret123@localhost:9000/api/1.0/volume/gv1 -d "stop=1"
 
       response: |
         
