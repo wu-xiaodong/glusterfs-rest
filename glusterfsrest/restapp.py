@@ -56,6 +56,8 @@ def get_post_data(key, default_value=None):
     val = request.form[key] if key in request.form else default_value
     if isinstance(default_value, types.BooleanType):
         val = True if val else False
+    elif isinstance(default_value, types.IntType):
+        val = int(val)
 
     return val
 
