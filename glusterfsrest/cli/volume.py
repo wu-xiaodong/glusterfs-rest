@@ -91,13 +91,9 @@ def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
     cmd = VOLUME_CMD + ["create", name]
     if stripe > 1:
         cmd += ["stripe", str(stripe)]
-    else:
-        raise GlusterCliFailure("stripe count should be greater than 1!")
 
     if replica > 1:
         cmd += ["replica", str(replica)]
-    else:
-        raise GlusterCliFailure("replica count should be greater than 1!")
 
     cmd += ["transport", transport]
 
@@ -153,12 +149,14 @@ def _parse_a_limit(limit_el):
 def _parsequotalist(quotainfo):
     tree = utils.checkxmlcorrupt(quotainfo)
     limits = []
-    for el in tree.findall('volQuota/limit'):
-        try:
-            limits.append(_parse_a_limit(el))
-        except (ParseError, AttributeError, ValueError) as e:
-            raise GlusterCliBadXml(str(e))
-
+    if tree.find('opRet').text != '0':
+        raise GlusterCliFailure(tree.find('opErrstr').text)
+    else:
+        for el in tree.findall('volQuota/limit'):
+            try:
+                limits.append(_parse_a_limit(el))
+            except (ParseError, AttributeError, ValueError) as e:
+                raise GlusterCliBadXml(str(e))
     return limits
 
 
