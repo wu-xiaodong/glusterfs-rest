@@ -87,13 +87,16 @@ def stop(name, force=False):
 
 
 def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
-           start_volume=False, limit=False, quota=1):
+           start_volume=False, limit=False, quota=1, arbiter=False):
     cmd = VOLUME_CMD + ["create", name]
     if stripe > 1:
         cmd += ["stripe", str(stripe)]
 
     if replica > 1:
         cmd += ["replica", str(replica)]
+
+    if arbiter:
+        cmd += ["arbiter 1"]
 
     cmd += ["transport", transport]
 
