@@ -62,11 +62,18 @@ apis:
           example: 1
           desc: Set Quota after enable volume limit, 0 means not set quota
           default: 1
+          
+        - name: arbiter
+          type: int
+          required: false
+          example: 1
+          desc: Enable arbiter mode
+          default: 0
 
       example: |
 
         curl -X POST http://admin:secret123@localhost:9000/api/1.0/volume/gv1 -d \
-        "bricks=bricksserver1:/exports/bricks/b1,bricksserver2:/exports/bricks/b2&start=1&replica=2&limit=1&quota=2"
+        "bricks=bricksserver1:/exports/bricks/b1,bricksserver2:/exports/bricks/b2&start=1&replica=2&limit=1&quota=2&arbiter=1"
 
       response: |
 
