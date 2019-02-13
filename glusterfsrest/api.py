@@ -87,6 +87,13 @@ def volume_quota_get(version, name):
     return run_and_response(volume.listquota, [name])
 
 
+@app.route("/api/<float:version>/volume/<string:name>/quota", methods=["POST"])
+@requires_auth(['glusterroot', 'glusteradmin', 'glusteruser'])
+def volume_quota_set(version, name):
+    quota = get_post_data('quota')
+    return run_and_response(volume.setquota, [name, quota])
+
+
 @app.route("/api/<float:version>/peers", methods=["GET"])
 @requires_auth(['glusterroot', 'glusteradmin', 'glusteruser'])
 def peers_get(version):
