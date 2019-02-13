@@ -10,7 +10,6 @@ from glusterfsrest import utils
 from glusterfsrest.exceptions import GlusterCliBadXml, ParseError
 from glusterfsrest.exceptions import GlusterCliFailure
 
-
 VOLUME_CMD = ['gluster', '--mode=script', 'volume']
 
 
@@ -61,9 +60,39 @@ def _parseinfo(volinfo):
     return volumes
 
 
+def _parse_status(vol_status):
+    tree = utils.checkxmlcorrupt(vol_status)
+    volume_status = []
+
+    for i, node in enumerate(tree.findall('volStatus/volumes/volume/node')):
+        node_value = {
+            'gluster_process_index': i,
+            'hostname': node.find('hostname').text,
+            'path': node.find('path').text,
+            'peer_id': node.find('peerid').text,
+            'status': int(node.find('status').text),
+            'port': node.find('port').text,
+            'tcp': node.find('ports/tcp').text,
+            'rdma': node.find('ports/rdma').text,
+            'pid': int(node.find('pid').text),
+        }
+        volume_status.append(node_value)
+
+    return volume_status
+
+
 def info(name=None):
     cmd = VOLUME_CMD + ["info"] + ([name] if name else [])
     data = utils.execute_and_output(cmd, _parseinfo)
+    if name and not data:
+        raise GlusterCliFailure("Volume %s does not exist" % name)
+
+    return data
+
+
+def status(name=None):
+    cmd = VOLUME_CMD + ["status"] + ([name] if name else [])
+    data = utils.execute_and_output(cmd, _parse_status)
     if name and not data:
         raise GlusterCliFailure("Volume %s does not exist" % name)
 
@@ -115,7 +144,7 @@ def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
             enable_cmd = VOLUME_CMD + ["quota", name, "enable"]
             if quota > 0:
                 utils.checkstatuszero(enable_cmd)
-                quota_cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota)+"GB"]
+                quota_cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota) + "GB"]
                 return utils.checkstatuszero(quota_cmd)
             else:
                 return utils.checkstatuszero(enable_cmd)
@@ -170,7 +199,7 @@ def listquota(name):
 
 def setquota(name, quota):
     if quota > 0:
-        cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota)+"GB"]
+        cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota) + "GB"]
         return utils.checkstatuszero(cmd)
     else:
         raise GlusterCliFailure("Volume quota must be greater than 0!")
