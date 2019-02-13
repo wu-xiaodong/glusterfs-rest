@@ -89,11 +89,15 @@ def stop(name, force=False):
 def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
            start_volume=False, limit=False, quota=1):
     cmd = VOLUME_CMD + ["create", name]
-    if stripe > 0:
+    if stripe > 1:
         cmd += ["stripe", str(stripe)]
+    else:
+        raise GlusterCliFailure("stripe count should be greater than 1!")
 
-    if replica > 0:
+    if replica > 1:
         cmd += ["replica", str(replica)]
+    else:
+        raise GlusterCliFailure("replica count should be greater than 1!")
 
     cmd += ["transport", transport]
 
@@ -108,11 +112,14 @@ def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
     if start_volume:
         utils.checkstatuszero(cmd)
         if limit:
-            enable_cmd = VOLUME_CMD + ["quota", name, "enable"]
-            quota_cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota)+"GB"]
             start(name, force=True)
-            utils.checkstatuszero(enable_cmd)
-            return utils.checkstatuszero(quota_cmd)
+            enable_cmd = VOLUME_CMD + ["quota", name, "enable"]
+            if quota > 0:
+                utils.checkstatuszero(enable_cmd)
+                quota_cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota)+"GB"]
+                return utils.checkstatuszero(quota_cmd)
+            else:
+                return utils.checkstatuszero(enable_cmd)
         else:
             return start(name, force=True)
     else:
