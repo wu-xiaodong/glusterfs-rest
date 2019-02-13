@@ -87,7 +87,7 @@ def stop(name, force=False):
 
 
 def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
-           start_volume=False):
+           start_volume=False, limit=False, quota=1):
     cmd = VOLUME_CMD + ["create", name]
     if stripe > 0:
         cmd += ["stripe", str(stripe)]
@@ -107,7 +107,14 @@ def create(name, bricks, replica=0, stripe=0, transport='tcp', force=False,
     # decorator will take care of running cmd
     if start_volume:
         utils.checkstatuszero(cmd)
-        return start(name, force=True)
+        if limit:
+            enable_cmd = VOLUME_CMD + ["quota", name, "enable"]
+            quota_cmd = VOLUME_CMD + ["quota", name, "limit-usage", "/", str(quota)+"GB"]
+            start(name, force=True)
+            utils.checkstatuszero(enable_cmd)
+            return utils.checkstatuszero(quota_cmd)
+        else:
+            return start(name, force=True)
     else:
         return utils.checkstatuszero(cmd)
 
