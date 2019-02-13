@@ -90,7 +90,7 @@ def volume_quota_get(version, name):
 @app.route("/api/<float:version>/volume/<string:name>/quota", methods=["POST"])
 @requires_auth(['glusterroot', 'glusteradmin', 'glusteruser'])
 def volume_quota_set(version, name):
-    quota = get_post_data('quota')
+    quota = get_post_data('quota', 0)
     return run_and_response(volume.setquota, [name, quota])
 
 
