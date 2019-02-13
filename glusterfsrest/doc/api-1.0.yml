@@ -17,15 +17,15 @@ apis:
         - name: replica
           type: int
           required: false
-          example: 1
-          desc: Replica Count
+          example: 2
+          desc: Replica Count, 0 or 1 means not use replica mode
           default: 0
        
         - name: stripe
           type: int
           required: false
-          example: 1
-          desc: Stripe Count
+          example: 2
+          desc: Stripe Count, 0 or 1 means not use stripe mode
           default: 0
        
         - name: transport
@@ -53,14 +53,14 @@ apis:
           type: int
           required: false
           example: 1
-          desc: Limit volume after start
+          desc: Enable volume limit after start
           default: 0
 
         - name: quota
           type: int
           required: false
           example: 1
-          desc: Set Quota if limit
+          desc: Set Quota after enable volume limit, 0 means not set quota
           default: 1
 
       example: |
@@ -219,7 +219,6 @@ apis:
       response: |
         N
         
-
 # -----------------------------------------------------------------------------
 # Get Gluster Volume info
 # -----------------------------------------------------------------------------
@@ -233,6 +232,67 @@ apis:
         curl -X GET http://admin:secret123@localhost:9000/api/1.0/volume/gv1
       response: |
         N
+
+# -----------------------------------------------------------------------------
+# Get Gluster Volume Quota info
+# -----------------------------------------------------------------------------
+    - url: volume/:name/quota
+      auth: true
+      title: Get gluster Volume Quota info of a gluster volume
+      category: volume
+      method: GET
+      example: |
+
+        curl -X GET http://admin:secret123@localhost:9000/api/1.0/volume/gv1/quota
+      response: |
+        Success example:
+        {
+          "data": [
+            {
+              "Hard-limit exceeded?": "No",
+              "hard_limit": "2147483648",
+              "path": "/",
+              "used_space": "512"
+            },
+            {
+              "Hard-limit exceeded?": "No",
+              "hard_limit": "2147483648",
+              "path": "/test",
+              "used_space": "0"
+            }
+          ],
+          "ok": true
+        }
+
+        Failure example:
+        {
+          "error": "No quota configured on volume gv1",
+          "ok": false
+        }
+
+# -----------------------------------------------------------------------------
+# Set Gluster Volume Quota
+# -----------------------------------------------------------------------------
+    - url: volume/:name/quota
+      auth: true
+      title: Set gluster Volume Quota of a gluster volume
+      category: volume
+      method: POST
+      example: |
+
+        curl -X POST http://admin:secret123@localhost:9000/api/1.0/volume/gv1 -d "quota=2"
+      response: |
+        Success example:
+        {
+          "data": true,
+          "ok": true
+        }
+
+        Failure example:
+        {
+          "error": "Volume quota must be greater than 0!",
+          "ok": false
+        }
 
 # -----------------------------------------------------------------------------
 # Get Peers info
