@@ -35,7 +35,7 @@ def install():
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     """
-    cursor.execute(create_table)
+    return cursor.execute(create_table)
 
 
 def reinstall():
@@ -51,7 +51,7 @@ def reinstall():
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     """
-    cursor.execute(create_table)
+    return cursor.execute(create_table)
 
 
 def useradd(username, password, group):
