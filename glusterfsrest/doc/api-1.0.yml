@@ -245,6 +245,7 @@ apis:
 
         curl -X GET http://admin:secret123@localhost:9000/api/1.0/volume/gv1/quota
       response: |
+      
         Success example:
         {
           "data": [
@@ -282,6 +283,7 @@ apis:
 
         curl -X POST http://admin:secret123@localhost:9000/api/1.0/volume/gv1 -d "quota=2"
       response: |
+      
         Success example:
         {
           "data": true,
