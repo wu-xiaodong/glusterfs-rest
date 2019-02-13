@@ -32,9 +32,11 @@ def volume_create(version, name):
     transport = get_post_data('transport', 'tcp').lower()
     force = get_post_data('force', False)
     start = get_post_data('start', False)
+    limit = get_post_data('limit', False)
+    quota = get_post_data('quota', 1)
 
     return run_and_response(volume.create, [name, bricks, replica,
-                                            stripe, transport, force, start])
+                                            stripe, transport, force, start, limit, quota])
 
 
 @app.route("/api/<float:version>/volume/<string:name>", methods=["DELETE"])
